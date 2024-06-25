@@ -15,20 +15,20 @@ function loader(element) {
     if (element.textContent === '....') {
       element.textContent = '';
     }
-  }, 300)
+  }, 300);
 }
 
 function typeText(element, text) {
   let index = 0;
 
   let interval = setInterval(() => {
-    if(index < text.length) {
+    if (index < text.length) {
       element.innerHTML += text.charAt(index);
       index++;
     } else {
       clearInterval(interval);
     }
-  }, 20)
+  }, 20);
 }
 
 function generateUniqueId() {
@@ -39,10 +39,10 @@ function generateUniqueId() {
   return `id-${timestamp}-${hexadecimalString}`;
 }
 
-function chatStripe (isAi, value, uniqueID) {
+function chatStripe(isAi, value, uniqueId) {
   return (
     `
-      <div class="wrapper ${isAi && 'ai'}">
+      <div class="wrapper ${isAi ? 'ai' : ''}">
         <div class="chat">
           <div class="profile">
             <img
@@ -54,7 +54,7 @@ function chatStripe (isAi, value, uniqueID) {
         </div>
       </div>
     `
-  )
+  );
 }
 
 const handleSubmit = async (e) => {
@@ -62,24 +62,23 @@ const handleSubmit = async (e) => {
 
   const data = new FormData(form);
 
-  //user's chatstripe
+  // user's chat stripe
   chatContainer.innerHTML += chatStripe(false, data.get('prompt'));
-  
-  form.rest();
 
-  //bot's chatstripe
+  form.reset();
+
+  // bot's chat stripe
   const uniqueId = generateUniqueId();
-  chatContainer.innerHTML += chatStripe(true, " ");
+  chatContainer.innerHTML += chatStripe(true, ' ', uniqueId);
 
   chatContainer.scrollTop = chatContainer.scrollHeight;
 
   const messageDiv = document.getElementById(uniqueId);
 
-  loader(messageDiv)
+  loader(messageDiv);
 
   // fetch data from server -> bot's response
-
-  const response = await fetch('http://localhost:5000', {
+  const response = await fetch('http://localhost:5001', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
@@ -87,28 +86,28 @@ const handleSubmit = async (e) => {
     body: JSON.stringify({
       prompt: data.get('prompt')
     })
-  })
+  });
 
   clearInterval(loadInterval);
   messageDiv.innerHTML = '';
 
-  if(response.ok) {
-    const data = await response.json();
-    const parsedData = data.bot.trim();
+  if (response.ok) {
+    const responseData = await response.json();
+    const parsedData = responseData.bot.trim();
 
     typeText(messageDiv, parsedData);
   } else {
     const err = await response.text();
 
-    messageDiv.innerHTML = "Something went wrong";
+    messageDiv.innerHTML = 'Something went wrong';
 
     alert(err);
   }
-}
+};
 
 form.addEventListener('submit', handleSubmit);
 form.addEventListener('keyup', (e) => {
   if (e.keyCode === 13) {
     handleSubmit(e);
   }
-})
+});
