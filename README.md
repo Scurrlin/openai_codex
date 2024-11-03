@@ -1,5 +1,4 @@
 # Codex
-
 An AI powered chatbot to help answer your coding questions.
 
 <p align="center">
