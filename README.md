@@ -9,6 +9,7 @@ An AI powered chatbot to help answer your coding questions.
 </p>
 
 ## Technologies Used
-* HTML/CSS
+* HTML
+* CSS
 * JavaScript
 * OpenAI's GPT-3.5
